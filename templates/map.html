@@ -1,0 +1,52 @@
+<!-- Required Imports -->
+{% extends "base.html" %}
+{% load leaflet_tags %}
+{% load static %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Map Page" %}
+{% endblock %}
+
+{% block extra_header %}
+    <!-- Style map -->
+    <style>
+        #map {
+            width: 100vw;
+            height: 90vh;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <!-- Check of the user is logged in  -->
+    {% if user.is_authenticated %}
+        {% block body_content %}
+
+            <!-- Form for the search bar -->
+            <div class="d-flex justify-content-center" style="padding-bottom: 10px">
+                 <form action="/search/" method="post">
+                    <input id="search" type="text" name="search" >
+                    <input type="button" value="Search" onclick="showOnMap(this.form.search.value)">
+                 </form>
+            </div>
+
+            <!-- Leaflet map -->
+            {% leaflet_map "map" callback="window.map_init_basic" %}
+
+        {% endblock %}
+
+        {% block extra_footer %}
+            <!-- JS imports for clustering markers -->
+            <script src="{%  static 'ASSETS/JS/map.js' %} ? {% now "U" %} "> </script>
+            <script src="{%  static 'dist/leaflet.markercluster.js' %} ? {% now "U" %} "> </script>
+        {% endblock %}
+
+    {% else %}
+        <!-- Prompt to log in if not logged in -->
+        <div style="text-align: center;">
+          <p>You are not logged in</p>
+          <a href="{% url 'login' %}">Log In</a>
+        </div>
+    {% endif %}
+{% endblock %}
